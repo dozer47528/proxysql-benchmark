@@ -8,7 +8,7 @@ data:
     
     mysql_variables=
     {
-        threads=4
+        threads=8
         max_connections=2048
         default_query_delay=0
         default_query_timeout=36000000

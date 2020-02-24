@@ -16,4 +16,4 @@ resources:
 configurationFiles:
   mysql.cnf: |-
     [mysqld]
-    max_connections=5000
+    max_connections=2048

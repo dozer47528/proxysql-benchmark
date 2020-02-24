@@ -8,7 +8,7 @@ data:
 
     echo "========== Clean Up =========="
     
-    sysbench /usr/share/sysbench/{{ .Values.target }} cleanup \
+    sysbench /usr/share/sysbench/{{ .Values.sysbench.target }} cleanup \
     --mysql-host=mysql \
     --mysql-user=benchmark \
     --mysql-password=benchmark \
@@ -16,7 +16,7 @@ data:
 
     echo "========== Prepare =========="
 
-    sysbench /usr/share/sysbench/{{ .Values.target }} prepare \
+    sysbench /usr/share/sysbench/{{ .Values.sysbench.target }} prepare \
     --table_size=10000 \
     --mysql-host=mysql \
     --mysql-user=benchmark \
@@ -25,7 +25,7 @@ data:
 
     echo "========== Warm Up =========="
     
-    sysbench /usr/share/sysbench/{{ .Values.target }} run \
+    sysbench /usr/share/sysbench/{{ .Values.sysbench.target }} run \
     --mysql-host=mysql \
     --mysql-user=benchmark \
     --mysql-password=benchmark \
@@ -33,7 +33,7 @@ data:
     --threads=1 \
     --time=10
 
-    sysbench /usr/share/sysbench/{{ .Values.target }} run \
+    sysbench /usr/share/sysbench/{{ .Values.sysbench.target }} run \
     --mysql-host=proxysql \
     --mysql-user=benchmark \
     --mysql-password=benchmark \
@@ -43,26 +43,29 @@ data:
 
     echo "========== Benchmark Start =========="
 
-    threads=(5 10 50 100 500)
+    threads=(10 50 100 500 1000 2000)
     for num in "${threads[@]}"
     do
       echo "========== MySQL Threads ${num} =========="
       
-      sysbench /usr/share/sysbench/{{ .Values.target }} run \
+      sysbench /usr/share/sysbench/{{ .Values.sysbench.target }} run \
       --mysql-host=mysql \
       --mysql-user=benchmark \
       --mysql-password=benchmark \
       --mysql-db=benchmark \
       --threads=$num \
-      --time=30
+      --rate={{ .Values.sysbench.rate }} \
+      --time={{ .Values.sysbench.time }}
+      
 
       echo "========== ProxySQL Threads ${num} =========="
 
-      sysbench /usr/share/sysbench/{{ .Values.target }} run \
+      sysbench /usr/share/sysbench/{{ .Values.sysbench.target }} run \
       --mysql-host=proxysql \
       --mysql-user=benchmark \
       --mysql-password=benchmark \
       --mysql-db=benchmark \
       --threads=$num \
-      --time=30
+      --rate={{ .Values.sysbench.rate }} \
+      --time={{ .Values.sysbench.time }}
     done

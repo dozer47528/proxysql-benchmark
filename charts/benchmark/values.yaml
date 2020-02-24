@@ -7,5 +7,9 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
 
-target: 
+sysbench:
+  target: oltp_read_only.lua 
+  rate: 0
+  time: 30
+
 resources: {}
