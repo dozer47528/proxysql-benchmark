@@ -21,7 +21,7 @@ benchmark:
 log:
 	kubectl logs -f `kubectl get pod -l app.kubernetes.io/name=benchmark -o jsonpath="{.items[0].metadata.name}"`
 
-clean:
+cleanup:
 	helm delete benchmark || true
 	helm delete proxysql || true
 	helm delete mysql || true
