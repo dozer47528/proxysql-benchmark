@@ -7,4 +7,5 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
 
+target: 
 resources: {}

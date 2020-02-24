@@ -16,7 +16,8 @@ benchmark:
 		--set resources.requests.memory=1Gi \
 		--set resources.limits.memory=1Gi \
 		--set resources.requests.cpu=1 \
-		--set resources.limits.cpu=1
+		--set resources.limits.cpu=1 \
+		--set target=oltp_read_only.lua
 
 log:
 	kubectl logs -f `kubectl get pod -l app.kubernetes.io/name=benchmark -o jsonpath="{.items[0].metadata.name}"`
