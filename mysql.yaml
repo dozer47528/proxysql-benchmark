@@ -1,0 +1,19 @@
+persistence:
+  enabled: false
+
+mysqlUser: benchmark
+mysqlPassword: benchmark
+mysqlDatabase: benchmark
+
+resources:
+  requests:
+    cpu: 4
+    memory: 4Gi
+  limits:
+    cpu: 4
+    memory: 4Gi
+
+configurationFiles:
+  mysql.cnf: |-
+    [mysqld]
+    max_connections=5000

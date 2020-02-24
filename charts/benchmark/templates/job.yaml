@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "benchmark.fullname" . }}
+  labels:
+    {{- include "benchmark.labels" . | nindent 4 }}
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "benchmark.selectorLabels" . | nindent 8 }}
+    spec:
+      terminationGracePeriodSeconds: 1
+      restartPolicy: Never
+      volumes:
+        - name: script-volume
+          configMap:
+            name: {{ include "benchmark.fullname" . }}
+            defaultMode: 0777
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/opt/benchmark.sh"]
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /opt/benchmark.sh
+              name: script-volume
+              subPath: benchmark.sh

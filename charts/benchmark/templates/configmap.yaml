@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "benchmark.fullname" . }}
+data:
+  benchmark.sh: |
+    #!/bin/bash
+
+    echo "========== Clean Up =========="
+    
+    sysbench /usr/share/sysbench/oltp_read_only.lua cleanup \
+    --mysql-host=mysql \
+    --mysql-user=benchmark \
+    --mysql-password=benchmark \
+    --mysql-db=benchmark
+
+    echo "========== Prepare =========="
+
+    sysbench /usr/share/sysbench/oltp_read_only.lua prepare \
+    --table_size=10000 \
+    --mysql-host=mysql \
+    --mysql-user=benchmark \
+    --mysql-password=benchmark \
+    --mysql-db=benchmark
+
+    echo "========== Warm Up =========="
+    
+    sysbench /usr/share/sysbench/oltp_read_only.lua run \
+    --mysql-host=mysql \
+    --mysql-user=benchmark \
+    --mysql-password=benchmark \
+    --mysql-db=benchmark \
+    --threads=1 \
+    --time=10
+
+    sysbench /usr/share/sysbench/oltp_read_only.lua run \
+    --mysql-host=proxysql \
+    --mysql-user=benchmark \
+    --mysql-password=benchmark \
+    --mysql-db=benchmark \
+    --threads=1 \
+    --time=10
+
+    echo "========== Benchmark Start =========="
+
+    threads=(5 10 50 100 500)
+    for num in "${threads[@]}"
+    do
+      echo "========== MySQL Threads ${num} =========="
+      
+      sysbench /usr/share/sysbench/oltp_read_only.lua run \
+      --mysql-host=mysql \
+      --mysql-user=benchmark \
+      --mysql-password=benchmark \
+      --mysql-db=benchmark \
+      --threads=$num \
+      --time=30
+
+      echo "========== ProxySQL Threads ${num} =========="
+
+      sysbench /usr/share/sysbench/oltp_read_only.lua run \
+      --mysql-host=proxysql \
+      --mysql-user=benchmark \
+      --mysql-password=benchmark \
+      --mysql-db=benchmark \
+      --threads=$num \
+      --time=30
+    done

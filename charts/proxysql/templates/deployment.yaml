@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "proxysql.fullname" . }}
+  labels:
+    {{- include "proxysql.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "proxysql.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        timstamp: "{{ date "20060102150405" .Release.Time }}"
+        {{- include "proxysql.selectorLabels" . | nindent 8 }}
+    spec:
+      volumes:
+      - configMap:
+          name: {{ include "proxysql.fullname" . }}
+        name: config-volume
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: mysql
+              containerPort: 3306
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /etc/proxysql.cnf
+              name: config-volume
+              subPath: proxysql.cnf
