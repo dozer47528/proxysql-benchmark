@@ -7,6 +7,7 @@ prepare:
 		--set resources.limits.memory=256Mi \
 		--set resources.requests.cpu=2 \
 		--set resources.limits.cpu=2 \
+		--set threads=4 \
 		--wait --timeout 120s
 
 benchmark:
